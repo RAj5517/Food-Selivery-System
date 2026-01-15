@@ -60,6 +60,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/api/restaurants/**", "/api/restaurant/{id}/menu", "/api/restaurant/menu/items/{id}").permitAll()
+                .requestMatchers("/api/categories/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/restaurant/**").hasAnyRole("RESTAURANT", "ADMIN")
                 .requestMatchers("/api/delivery/**").hasAnyRole("DELIVERY", "ADMIN")
