@@ -100,3 +100,14 @@ node_modules/
 *.backup
 *~
 
+# Test scripts
+*.ps1
+*.sh
+test_*.ps1
+test_*.sh
+
+# Testing guides (optional - uncomment if you don't want to commit testing guides)
+# *TESTING*.md
+# *GUIDE*.md
+# HOW_TO_TEST.md
+
