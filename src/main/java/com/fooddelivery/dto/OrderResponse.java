@@ -25,6 +25,7 @@ public class OrderResponse {
     private BigDecimal totalAmount;
     private Order.PaymentStatus paymentStatus;
     private LocalDateTime orderDate;
+    private LocalDateTime deliveredDate;
     private List<OrderItemResponse> items;
 }
 

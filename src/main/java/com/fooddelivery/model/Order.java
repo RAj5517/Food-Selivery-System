@@ -57,6 +57,9 @@ public class Order {
     @Column(name = "order_date", nullable = false, updatable = false)
     private LocalDateTime orderDate;
 
+    @Column(name = "delivered_date")
+    private LocalDateTime deliveredDate;
+
     // Relationships
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();

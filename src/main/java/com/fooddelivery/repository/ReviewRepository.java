@@ -8,21 +8,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    
     Optional<Review> findByOrderId(Long orderId);
-    
     Page<Review> findByRestaurantId(Long restaurantId, Pageable pageable);
-    
-    Page<Review> findByCustomerId(Long customerId, Pageable pageable);
-    
+    List<Review> findByCustomerId(Long customerId);
+
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.restaurant.id = :restaurantId")
-    Double calculateAverageRatingByRestaurantId(@Param("restaurantId") Long restaurantId);
-    
-    @Query("SELECT COUNT(r) FROM Review r WHERE r.restaurant.id = :restaurantId")
-    Long countByRestaurantId(@Param("restaurantId") Long restaurantId);
+    Optional<BigDecimal> calculateAverageRatingByRestaurantId(@Param("restaurantId") Long restaurantId);
+
+    Long countByRestaurantId(Long restaurantId);
 }
 

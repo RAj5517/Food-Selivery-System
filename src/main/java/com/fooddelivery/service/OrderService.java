@@ -311,6 +311,7 @@ public class OrderService {
         }
 
         order.setStatus(Order.OrderStatus.DELIVERED);
+        order.setDeliveredDate(LocalDateTime.now());
         order = orderRepository.save(order);
 
         // Send order status update email
@@ -342,6 +343,7 @@ public class OrderService {
         response.setTotalAmount(order.getTotalAmount());
         response.setPaymentStatus(order.getPaymentStatus());
         response.setOrderDate(order.getOrderDate());
+        response.setDeliveredDate(order.getDeliveredDate());
 
         // Convert address
         if (order.getAddress() != null) {

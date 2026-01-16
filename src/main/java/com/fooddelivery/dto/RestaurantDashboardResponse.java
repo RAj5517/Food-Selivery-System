@@ -10,11 +10,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RestaurantReviewsResponse {
-    private Long restaurantId;
-    private String restaurantName;
+public class RestaurantDashboardResponse {
+    private Long ordersToday;
+    private BigDecimal revenueToday;
     private BigDecimal averageRating;
-    private Long totalReviews;
-    private List<ReviewResponse> reviews;
+    private Long totalOrders;
+    private BigDecimal totalRevenue;
+    private List<PopularItemResponse> popularItems;
 }
 
