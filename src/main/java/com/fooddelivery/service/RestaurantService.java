@@ -8,6 +8,9 @@ import com.fooddelivery.model.User;
 import com.fooddelivery.repository.RestaurantRepository;
 import com.fooddelivery.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,12 +27,16 @@ public class RestaurantService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private CacheManager cacheManager;
 
     public Page<RestaurantResponse> getAllRestaurants(String cuisine, String city, BigDecimal minRating, Pageable pageable) {
         Page<Restaurant> restaurants = restaurantRepository.findRestaurantsWithFilters(cuisine, city, minRating, pageable);
         return restaurants.map(this::convertToResponse);
     }
 
+    @Cacheable(value = "restaurants", key = "#id")
     public RestaurantResponse getRestaurantById(Long id) {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + id));
@@ -66,6 +73,12 @@ public class RestaurantService {
         }
 
         restaurant = restaurantRepository.save(restaurant);
+        
+        // Evict cache after update
+        if (cacheManager.getCache("restaurants") != null) {
+            cacheManager.getCache("restaurants").evictIfPresent(restaurant.getId());
+        }
+        
         return convertToResponse(restaurant);
     }
 
@@ -76,6 +89,12 @@ public class RestaurantService {
 
         restaurant.setIsOpen(!restaurant.getIsOpen());
         restaurant = restaurantRepository.save(restaurant);
+        
+        // Evict cache after update
+        if (cacheManager.getCache("restaurants") != null) {
+            cacheManager.getCache("restaurants").evictIfPresent(restaurant.getId());
+        }
+        
         return convertToResponse(restaurant);
     }
 
@@ -88,6 +107,15 @@ public class RestaurantService {
         User user = restaurant.getUser();
         user.setIsActive(false);
         userRepository.save(user);
+        
+        // Evict cache for this restaurant
+        if (cacheManager.getCache("restaurants") != null) {
+            cacheManager.getCache("restaurants").evictIfPresent(restaurant.getId());
+        }
+        // Also evict menu items cache for this restaurant
+        if (cacheManager.getCache("menuItems") != null) {
+            cacheManager.getCache("menuItems").clear();
+        }
     }
 
     public RestaurantResponse getRestaurantByUserId(Long userId) {

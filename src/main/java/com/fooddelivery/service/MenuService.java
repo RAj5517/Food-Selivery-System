@@ -10,6 +10,8 @@ import com.fooddelivery.repository.CategoryRepository;
 import com.fooddelivery.repository.MenuItemRepository;
 import com.fooddelivery.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class MenuService {
     private CategoryRepository categoryRepository;
 
     @Transactional
+    @CacheEvict(value = "menuItems", allEntries = true)
     public MenuItemResponse addMenuItem(Long restaurantUserId, MenuItemRequest request) {
         Restaurant restaurant = restaurantRepository.findByUserId(restaurantUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
@@ -49,6 +52,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "menuItems", allEntries = true)
     public MenuItemResponse updateMenuItem(Long restaurantUserId, Long menuItemId, MenuItemRequest request) {
         Restaurant restaurant = restaurantRepository.findByUserId(restaurantUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
@@ -75,6 +79,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "menuItems", allEntries = true)
     public void deleteMenuItem(Long restaurantUserId, Long menuItemId) {
         Restaurant restaurant = restaurantRepository.findByUserId(restaurantUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
@@ -89,6 +94,7 @@ public class MenuService {
         menuItemRepository.delete(menuItem);
     }
 
+    @Cacheable(value = "menuItems", key = "#restaurantId + '_' + #categoryId + '_' + #isVeg + '_' + #isAvailable + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<MenuItemResponse> getMenuItems(Long restaurantId, Long categoryId, Boolean isVeg, Boolean isAvailable, Pageable pageable) {
         Page<MenuItem> menuItems = menuItemRepository.findMenuItemsWithFilters(restaurantId, categoryId, isVeg, isAvailable, pageable);
         return menuItems.map(this::convertToResponse);

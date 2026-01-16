@@ -10,6 +10,8 @@ import com.fooddelivery.model.CustomerAddress;
 import com.fooddelivery.repository.CustomerAddressRepository;
 import com.fooddelivery.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,7 @@ public class CustomerService {
     }
 
     @Transactional
+    @CacheEvict(value = "customerAddresses", key = "#userId")
     public AddressResponse addAddress(Long userId, AddressRequest request) {
         Customer customer = customerRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
@@ -69,6 +72,7 @@ public class CustomerService {
         return convertToAddressResponse(address);
     }
 
+    @Cacheable(value = "customerAddresses", key = "#userId")
     public List<AddressResponse> getCustomerAddresses(Long userId) {
         Customer customer = customerRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
@@ -80,6 +84,7 @@ public class CustomerService {
     }
 
     @Transactional
+    @CacheEvict(value = "customerAddresses", key = "#userId")
     public AddressResponse setDefaultAddress(Long userId, Long addressId) {
         Customer customer = customerRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
@@ -102,6 +107,7 @@ public class CustomerService {
     }
 
     @Transactional
+    @CacheEvict(value = "customerAddresses", key = "#userId")
     public void deleteAddress(Long userId, Long addressId) {
         Customer customer = customerRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
