@@ -106,8 +106,9 @@ node_modules/
 test_*.ps1
 test_*.sh
 
-# Testing guides (optional - uncomment if you don't want to commit testing guides)
-# *TESTING*.md
-# *GUIDE*.md
-# HOW_TO_TEST.md
+# Testing guides
+*TESTING*.md
+*GUIDE*.md
+HOW_TO_TEST.md
+PHASE*_TESTING*.md
 
